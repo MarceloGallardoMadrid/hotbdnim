@@ -29,6 +29,7 @@ import tiny_sqlite, std / options
 
 
 ]#
+# Practicando
 let db = openDatabase(":memory:")
 db.execScript("""
 CREATE TABLE Person(
