@@ -30,6 +30,7 @@ import tiny_sqlite, std / options
 
 ]#
 # Practicando
+## Aprendiendo lo de las ramasgit
 let db = openDatabase(":memory:")
 db.execScript("""
 CREATE TABLE Person(
