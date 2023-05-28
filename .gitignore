@@ -2,6 +2,8 @@ nimcache/
 nimblecache/
 htmldocs/
 bin/
+public/
+main2
 *.exe
 *.sqlite
 *.json
