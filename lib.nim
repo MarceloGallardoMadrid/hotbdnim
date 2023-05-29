@@ -22,7 +22,8 @@ type Mensaje = object
     codigo : int
     msg : string
 
-
+proc `==`(t1:Tabla,t2:Tabla):bool=
+    return t1.nombre == t2.nombre
 proc `==`(c1:Campo,c2:Campo):bool=
     return c1.nombre == c2.nombre
 proc print(c:Campo):string=
@@ -45,9 +46,9 @@ proc print(c:Config):string=
         s &= "\n"
     s
 proc print*(m:Mensaje):string=
-    " codigo: " & $m.codigo & " , msg" & m.msg
+    " codigo: " & $m.codigo & " , msg: " & m.msg
 # Primera solucion leer config y escribir config en cada entrada
-proc getConfig():Config=
+proc getconfig():Config=
     let db = open("data.sqlite","","","")
     var config_str=db.getValue(sql"SELECT config FROM Config WHERE id = ?",1)
     echo config_str
@@ -61,13 +62,13 @@ proc setconfig(config:Config)=
     db.close()
 
 proc newtabla*(tabla:Tabla):Mensaje=
-    var config = getConfig()
+    var config = getconfig()
     for t in config.tablas:
         if t.nombre == tabla.nombre:
             var m = Mensaje( codigo : -1 , msg : "ya existe esa tabla")
             return m
     var campos_map=initTable[string,string]()
-    var sqlcode = "CREATE TABLE " & tabla.nombre & "("
+    var sqlcode = "CREATE TABLE " & tabla.nombre & "(id string,"
     var i=0
     for c in tabla.campos:
         if campos_map.hasKey(c.nombre):
@@ -83,14 +84,35 @@ proc newtabla*(tabla:Tabla):Mensaje=
             sqlcode &= " , "
         i += 1
     sqlcode &= " )"
-    config.tablas.add(tabla)
+    var new_tabla=tabla
+    new_tabla.campos.add(Campo(nombre:"id",tipo:"text"))
+    config.tablas.add(new_tabla)
     setconfig(config)
     let db = open("data.sqlite","","","")
-    echo sqlcode
+    #echo sqlcode
     db.exec(sql sqlcode )
     db.close()
     return Mensaje(codigo:1 , msg : "Se pudo guardar la tabla")
 
+proc deletetabla*(tablan:string):Mensaje=
+    var config = getconfig()
+    let ix_t = config.tablas.find(Tabla(nombre:tablan))
+    if ix_t == -1:
+        return Mensaje(codigo: -4, msg:"No existe esa tabla")
+    
+    config.tablas = config.tablas.filter(proc(t:Tabla):bool = t.nombre != tablan)
+    let db = open("data.sqlite","","","")
+    db.exec(sql "DROP TABLE " & tablan )
+    db.close()
+    setconfig(config)
+    return Mensaje(codigo:2 , msg :"Se Pudo eliminar la tabla")
+
+#"Se puede agregar columnas, quitarlas, cambiarle el nombre y cambiarle el tipo"
+proc edittabla*(tabla:string,json:JsonNode):Mensaje=
+    Mensaje()
+
+proc todastablas*():seq[Tabla]=
+    getconfig().tablas
 
 
 
@@ -108,5 +130,5 @@ proc initdatabase*()=
         """)
         db.exec(sql"INSERT INTO Config (id, config) VALUES (1, ?)","""{"tablas":[]}""")
         db.close()
-    let config = getConfig()
+    let config = getconfig()
     echo config

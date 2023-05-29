@@ -6,14 +6,21 @@ import lib
 router myrouter:
     get "/":
         resp "va"
+    get "/tablas":
+        resp %*todastablas()
     post "/newtabla/":
         
-        echo request.body
+        
         let jsonObject = parseJson($request.body)
 
         var tabla = to(jsonObject, Tabla)
         
         resp print(newtabla(tabla))
+    post "/edittabla/@tablan":
+        let jsonObject = parseJson($request.body)
+        resp print(edittabla("@tablan",jsonObject))
+    post "/deletetabla/@tablan":
+        resp print(deletetabla(@"tablan"))
     else:
         resp "not found"
 
