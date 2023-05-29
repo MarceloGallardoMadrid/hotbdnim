@@ -7,3 +7,4 @@ main2
 *.exe
 *.sqlite
 *.json
+!nimabase.postman_collection.json

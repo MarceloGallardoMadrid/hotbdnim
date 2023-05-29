@@ -1,0 +1,196 @@
+{
+	"info": {
+		"_postman_id": "14b5b400-a7da-4325-b8d4-18ae4027076c",
+		"name": "nimabase",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "una tabla",
+			"item": [
+				{
+					"name": "agregar una fila",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "editar una fila",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "eliminar una fila",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "consultar una fila",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "consultar todo",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "create table",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\":\"t2\",\n    \"campos\":[\n        {\"nombre\":\"c1\",\"tipo\":\"text\"},\n        {\"nombre\":\"c2\",\"tipo\":\"real\"},\n        {\"nombre\":\"c3\",\"tipo\":\"integer\"},\n        {\"nombre\": \"c4\",\"tipo\":\"blob\" }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:22222/newtabla/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "22222",
+					"path": [
+						"newtabla",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create table Copy 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\":\"t1\",\n    \"x\":[\n        {\"nombre\":\"c1\",\"tipo\":\"text\"},\n        {\"nombre\":\"c2\",\"tipo\":\"real\"},\n        {\"nombre\":\"c3\",\"tipo\":\"integer\"}\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:22222/newtabla/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "22222",
+					"path": [
+						"newtabla",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit table",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nombre\":\"nuevonombre\",\n    \"nuevos\":[\n        {\"nombre\":\"X\",\"tipo\":\"text\"},\n        {\"nombre\":\"y\",\"tipo\":\"real\"}\n    ],\n    \"eliminar\":[\n        \"cx\",\"cy\"\n    ],\n    \"cambiarnombre\":[\n        [\"xold\",\"xnew\"],\n        [\"yold\",\"ynew\"]\n    ],\n    \"cambiartipo\":[\n        {\"nombre\":\"X\",\"tipo\":\"text\"}\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:22222/edittabla/t1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "22222",
+					"path": [
+						"edittabla",
+						"t1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete table",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:22222/deletetabla/t1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "22222",
+					"path": [
+						"deletetabla",
+						"t1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "todas las tablas",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:22222/tablas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "22222",
+					"path": [
+						"tablas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "va",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "not found",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
