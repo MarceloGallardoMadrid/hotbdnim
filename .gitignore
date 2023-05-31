@@ -3,6 +3,7 @@ nimblecache/
 htmldocs/
 bin/
 public/
+.vscode/
 main2
 *.exe
 *.sqlite
