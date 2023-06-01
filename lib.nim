@@ -354,7 +354,6 @@ proc addRow*(tablan:string,jso:JsonNode):Mensaje=
     var newrow = to(jso,AgregarFila)
     let valido = validateaddRow(tablan,newrow)
     if valido.codigo < 0:
-
         return valido
     var sqlcode = "INSERT INTO ? "
     var sqlcodefields = "( ? ,"
@@ -380,7 +379,56 @@ proc addRow*(tablan:string,jso:JsonNode):Mensaje=
     db.exec(sql sqlcode,arrfields.concat(arrvalues))
     db.close()
     return newMensaje(0,"Se guardo joya")
-proc editRow()=
-    echo "X"
-proc deleteRow()=
-    echo "X"
+proc editRow*(tablan:string,id:string,jso:JsonNode):Mensaje=
+    var newrow = to(jso,AgregarFila)
+    let valido = validateaddRow(tablan,newrow)
+    if valido.codigo < 0:
+        return valido
+    var db = open("data.sqlite","","","")
+    var sqlcode ="SELECT * FROM " & tablan & " WHERE id = ?"
+    let rw = db.getRow(sql sqlcode , id)
+    db.close()
+    if rw.len == 0:
+        return newMensaje(-2,"{'data':'No existe ese record'}")
+    sqlcode = "UPDATE ? SET "
+    var arrfields:seq[string] = @[tablan]
+    var sqlcodefields = ""
+    var i = 0
+    for c in newrow.valores:
+        if i < newrow.valores.len - 1:
+            sqlcodefields &= " ? = ? ,"
+            
+        else:
+            sqlcodefields &= " ? = ?"
+        arrfields.add(c.nombre)
+        arrfields.add(c.valor)
+        i += 1
+    
+    sqlcodefields &= " WHERE id = ?"
+    arrfields.add(id)
+    sqlcode &= sqlcodefields
+    db = open("data.sqlite","","","")
+    
+    db.exec(sql sqlcode,arrfields)
+    db.close()
+    newMensaje(0,"Se edito joya")
+proc deleteRow*(tablan:string,id:string):Mensaje=
+    let config = getconfig()
+    let idx_table = config.tablas.find(Tabla(nombre:tablan))
+    if idx_table == -1:
+        return newMensaje(-1,"{'data':'No existe esa tabla'}")
+    var db = open("data.sqlite","","","")
+    let sqlcode ="SELECT * FROM " & tablan & " WHERE id = ?"
+    let rw = db.getRow(sql sqlcode , id)
+    db.close()
+    if rw.len == 0:
+        return newMensaje(-2,"{'data':'No existe ese record'}")
+    db = open("data.sqlite","","","")
+    let sqlcodedel ="DELETE FROM ? WHERE id = ? "
+    echo sqlcodedel
+    echo tablan
+    echo id
+    db.exec(sql sqlcodedel ,tablan, id)
+    db.close()    
+    return newMensaje(0,"{'data':" & $rw & "}")
+    
