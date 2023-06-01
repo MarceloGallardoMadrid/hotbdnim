@@ -15,7 +15,7 @@ router myrouter:
     # Debe devolver un json
     get "/tablas/@tablan/records/@id":
         
-        resp print(getRow(@"tablan",@"id"))
+        resp %*getRow(@"tablan",@"id")
     # Debe devolver un json
     get "/tablas/@tablan/records":
         resp print(getRows(@"tablan"))

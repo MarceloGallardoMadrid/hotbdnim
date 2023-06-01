@@ -36,6 +36,11 @@ type AgregarCampo = object
     valor : string
 type AgregarFila = object
     valores : seq[AgregarCampo]
+type DBResponse[T] = object
+    meta : string
+    data : T
+proc newDBResponse[T](meta:string, data: T):DBResponse[T]=
+    DBResponse[T](meta:meta,data:data)
 proc `==`(t1:Tabla,t2:Tabla):bool=
     return t1.nombre == t2.nombre
 proc `==`(c1:Campo,c2:Campo):bool=
@@ -301,19 +306,65 @@ proc initdatabase*()=
 
 ## Logica de los datos
 ## Es cualquiera que devuelva un mensaje pero por ahora
-proc getRow*(tablan:string,id:string):Mensaje=
+proc getRow*(tablan:string,id:string):JsonNode=
     echo "Get row baby"
     let config = getconfig()
     let idx_table = config.tablas.find(Tabla(nombre:tablan))
     if idx_table == -1:
-        return newMensaje(-1,"{'data':'No existe esa tabla'}")
+        let mensaje = newMensaje(-1,"No existe esa tabla")
+        let respuesta = newDBResponse("Error",mensaje)
+        return %*respuesta
+    
+    var sqlcode ="SELECT id,"
+    var arrfields:seq[string] = @[]
+    var i = 1
+    for c in config.tablas[idx_table].campos:
+        if c.nombre == "id":
+            continue
+        if i < config.tablas[idx_table].campos.len - 1:
+            sqlcode &= " " & c.nombre & ", "
+        else:
+            sqlcode &= " " & c.nombre & "  "
+        
+        i += 1
+    sqlcode &= " FROM ? WHERE id = ?"
+    arrfields.add(tablan)
+    arrfields.add(id)
+    # No me gusta la idea de sqlcode
+    echo sqlcode
     let db = open("data.sqlite","","","")
-    let sqlcode ="SELECT * FROM " & tablan & " WHERE id = ?"
-    let rw = db.getRow(sql sqlcode , id)
+    let row = db.getRow(sql sqlcode , arrfields)
+    #let row3 = db.getAllRows(sql "select id,c1 from t1 where id = ?" , id)
+    #let row2= db.getRow(sql """ SELECT * FROM ? WHERE id = ?""",tablan,id)
     db.close()
-    if rw.len == 0:
-        return newMensaje(-2,"{'data':'No existe ese record'}")
-    return newMensaje(0,"{'data':" & $rw & "}")
+    #echo row3
+    #echo row2
+    echo row
+    if row[0] == "":
+        let mensaje = newMensaje(-2,"NO existe ese records")
+        return %* newDBResponse("Error",mensaje)
+    var jsonstr ="""{"meta":"todo bien","data":{"""
+    i = 0
+    
+    for c in config.tablas[idx_table].campos:
+        if c.tipo == "text":
+            
+            jsonstr &= """ " """ 
+            jsonstr &= c.nombre & """ " : " """
+            jsonstr &= row[i]
+            jsonstr &= """ " """
+        else:
+            jsonstr &= """ " """ 
+            jsonstr &= c.nombre & """ " :  """
+            jsonstr &= row[i]
+        if i < config.tablas[idx_table].campos.len - 1:
+            jsonstr &= ","
+
+        i += 1
+    jsonstr &= "}}"
+    #echo jsonstr
+    let jso = parseJson(jsonstr)
+    return jso
     
 proc getRows*(tablan:string):Mensaje=
     let config = getconfig()
@@ -430,5 +481,5 @@ proc deleteRow*(tablan:string,id:string):Mensaje=
     echo id
     db.exec(sql sqlcodedel ,tablan, id)
     db.close()    
-    return newMensaje(0,"{'data':" & $rw & "}")
+    return newMensaje(0,"Se guardo mortal")
     

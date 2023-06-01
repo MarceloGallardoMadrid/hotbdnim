@@ -1,0 +1,94 @@
+(tablas: @[(nombre: "t8", campos: @[(nombre: "c2", tipo: "real"), (nombre: "xnew", tipo: "blob"), (nombre: "c5", tipo: "blob"), (nombre: "c6", tipo: "blob"), (nombre: "c7", tipo: "text"), (nombre: "c8", tipo: "blob"), (nombre: "id", tipo: "text"), (nombre: "X", tipo: "text"), (nombre: "y", tipo: "real")]), (nombre: "t1", campos: @[(nombre: "c1", tipo: "text"), (nombre: "id", tipo: "text")])])
+INFO Jester is making jokes at http://0.0.0.0:22222
+Starting 1 threads
+Listening on port 22222
+DEBUG GET /tablas/t1/records/6478c1dde17c8613d4320b10
+Get row baby
+@[@["6478c1dde17c8613d4320b10", "dsa"]]
+@["6478c1dde17c8613d4320b10", "dsa"]
+@["dsa", "6478c1dde17c8613d4320b10"]
+{'meta':'todo bien','data':{ 'c1' : 'dsa', 'id' : '6478c1dde17c8613d4320b10'}}
+ERROR /home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(55) main2
+/home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(52) main
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(494) serve
+/home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(546) run
+/home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(378) eventLoop
+/home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(285) processEvents
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(497) :anonymous
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(399) handleRequest
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(232) dispatch
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(28) dispatchNimAsyncContinue
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(297) dispatchIter
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(232) myrouter
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(28) myrouterNimAsyncContinue
+/home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(18) myrouterIter
+/home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/lib.nim(362) getRow
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/json.nim(1035) parseJson
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/json.nim(951) parseJson
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/json.nim(896) parseJson
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/parsejson.nim(515) raiseParseErr
+[[reraised from:
+/home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(55) main2
+/home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(52) main
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(494) serve
+/home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(546) run
+/home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(378) eventLoop
+/home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(285) processEvents
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(497) :anonymous
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(399) handleRequest
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(232) dispatch
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(31) dispatchNimAsyncContinue
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(131) dispatchIter
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncfutures.nim(389) read
+]]
+[[reraised from:
+/home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(55) main2
+/home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(52) main
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(494) serve
+/home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(546) run
+/home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(378) eventLoop
+/home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(285) processEvents
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(497) :anonymous
+/home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(399) handleRequest
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(232) handleRequestSlow
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(31) handleRequestSlowNimAsyncContinue
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(131) handleRequestSlowIter
+/home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncfutures.nim(389) read
+]]
+input(1, 2) Error: string literal as key expected
+Async traceback:
+  /home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(55)     main2
+  /home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(52)     main
+  /home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(494)                                    serve
+  /home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(546)                              run
+  /home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(378)                              eventLoop
+  /home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(285)                              processEvents
+  /home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(497)                                    :anonymous
+  /home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(399)                                    handleRequest
+  /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(232)   dispatch
+  /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(28)    dispatchNimAsyncContinue
+  /home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(297)                                    dispatchIter
+  /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(232)   myrouter
+  /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(28)    myrouterNimAsyncContinue
+  /home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(18)     myrouterIter
+  /home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/lib.nim(362)      getRow
+  /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/json.nim(1035)        parseJson
+  /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/json.nim(951)         parseJson
+  /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/json.nim(896)         parseJson
+  /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/parsejson.nim(515)    raiseParseErr
+  #[
+    /home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(55)     main2
+    /home/piguis/Escritorio/nahuel/proyectos/cosas nim/hotreloaddb/hotbdnim/main2.nim(52)     main
+    /home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(494)                                    serve
+    /home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(546)                              run
+    /home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(378)                              eventLoop
+    /home/piguis/.nimble/pkgs/httpbeast-0.4.1/httpbeast.nim(285)                              processEvents
+    /home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(497)                                    :anonymous
+    /home/piguis/.nimble/pkgs/jester-0.5.0/jester.nim(399)                                    handleRequest
+    /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(232)   dispatch
+    /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(31)    dispatchNimAsyncContinue
+    /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncmacro.nim(131)   dispatchIter
+    /home/piguis/Escritorio/nahuel/programacion/nim/nim-1.6.12/lib/pure/asyncfutures.nim(389) read
+  ]#
+Exception message: input(1, 2) Error: string literal as key expected
+
