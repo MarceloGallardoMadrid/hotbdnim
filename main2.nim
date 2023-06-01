@@ -12,13 +12,13 @@ router myrouter:
     # Debe devolver un json
     get "/tablas":
         resp %*todastablas()
-    # Debe devolver un json
+    # Ver un record de una tabla
     get "/tablas/@tablan/records/@id":
         
         resp %*getRow(@"tablan",@"id")
-    # Debe devolver un json
+    # Ver los records de una tabla
     get "/tablas/@tablan/records":
-        resp print(getRows(@"tablan"))
+        resp %*getRows(@"tablan")
     # Debe devolver un json
     post "/tablas/@tablan/records":
         let jsonObject = parseJson($request.body)

@@ -307,7 +307,7 @@ proc initdatabase*()=
 ## Logica de los datos
 ## Es cualquiera que devuelva un mensaje pero por ahora
 proc getRow*(tablan:string,id:string):JsonNode=
-    echo "Get row baby"
+    #echo "Get row baby"
     let config = getconfig()
     let idx_table = config.tablas.find(Tabla(nombre:tablan))
     if idx_table == -1:
@@ -315,12 +315,12 @@ proc getRow*(tablan:string,id:string):JsonNode=
         let respuesta = newDBResponse("Error",mensaje)
         return %*respuesta
     
-    var sqlcode ="SELECT id,"
+    var sqlcode ="SELECT "
     var arrfields:seq[string] = @[]
-    var i = 1
+    var i = 0
     for c in config.tablas[idx_table].campos:
-        if c.nombre == "id":
-            continue
+        #if c.nombre == "id":
+        #    continue
         if i < config.tablas[idx_table].campos.len - 1:
             sqlcode &= " " & c.nombre & ", "
         else:
@@ -331,7 +331,7 @@ proc getRow*(tablan:string,id:string):JsonNode=
     arrfields.add(tablan)
     arrfields.add(id)
     # No me gusta la idea de sqlcode
-    echo sqlcode
+    #echo sqlcode
     let db = open("data.sqlite","","","")
     let row = db.getRow(sql sqlcode , arrfields)
     #let row3 = db.getAllRows(sql "select id,c1 from t1 where id = ?" , id)
@@ -339,23 +339,27 @@ proc getRow*(tablan:string,id:string):JsonNode=
     db.close()
     #echo row3
     #echo row2
-    echo row
+    #echo row
     if row[0] == "":
         let mensaje = newMensaje(-2,"NO existe ese records")
         return %* newDBResponse("Error",mensaje)
-    var jsonstr ="""{"meta":"todo bien","data":{"""
+    var jsonstr ="""{"meta":"todo bien","data":{"id":""""
+    jsonstr &= row[0]
+    jsonstr &= """", """
     i = 0
     
     for c in config.tablas[idx_table].campos:
+        #if c.nombre == "id":
+        #    continue
         if c.tipo == "text":
             
-            jsonstr &= """ " """ 
-            jsonstr &= c.nombre & """ " : " """
+            jsonstr &= """ """" 
+            jsonstr &= c.nombre & """" : """"
             jsonstr &= row[i]
-            jsonstr &= """ " """
+            jsonstr &= """" """
         else:
-            jsonstr &= """ " """ 
-            jsonstr &= c.nombre & """ " :  """
+            jsonstr &= """ """" 
+            jsonstr &= c.nombre & """" :  """
             jsonstr &= row[i]
         if i < config.tablas[idx_table].campos.len - 1:
             jsonstr &= ","
@@ -366,17 +370,62 @@ proc getRow*(tablan:string,id:string):JsonNode=
     let jso = parseJson(jsonstr)
     return jso
     
-proc getRows*(tablan:string):Mensaje=
+proc getRows*(tablan:string):JsonNode=
     let config = getconfig()
     let idx_table = config.tablas.find(Tabla(nombre:tablan))
     if idx_table == -1:
-        return newMensaje(-1,"{'data':'No existe esa tabla'}")
+        let mensaje = newMensaje(-1,"No existe esa tabla")
+        return %* newDBResponse("Error",mensaje)
+    
+    var arrfields: seq[string ]= @[]
+    var sqlcode = "SELECT   "
+    var i = 0
+    for c in config.tablas[idx_table].campos:
+        if i < config.tablas[idx_table].campos.len - 1:
+            sqlcode &= " " & c.nombre & ", "
+        else:
+            sqlcode &= " " & c.nombre & "  "
+        
+        i += 1
+    
+    sqlcode &= " FROM ?"
+    echo sqlcode
+    arrfields.add(tablan)
+    var  jsostrall="""{"meta":"todo bien","data":["""
     let db = open("data.sqlite","","","")
-    let sqlcode ="SELECT * FROM " & tablan  
-    let rws = db.getAllRows(sql sqlcode)
+    #let sqlcode ="SELECT * FROM " & tablan  
+    #let rws = db.getAllRows(sql sqlcode)
+    let rows = db.getAllRows(sql sqlcode,tablan)
+    echo rows
+    i = 0
+    for row in rows:
+        var jsonstr ="{"
+        var j = 0
+        for c in config.tablas[idx_table].campos:
+            if c.tipo == "text":
+                jsonstr &= """ """" 
+                jsonstr &= c.nombre & """" : """"
+                jsonstr &= row[j]
+                jsonstr &= """" """
+            else:
+                jsonstr &= """ """" 
+                jsonstr &= c.nombre & """" :  """
+                jsonstr &= row[j]
+            if j < config.tablas[idx_table].campos.len - 1:
+                jsonstr &= ","
+
+            
+            j += 1
+        jsonstr &= "}"
+        jsostrall &= jsonstr
+        if i < rows.len - 1:
+            jsostrall &= " , "
+        i += 1 
     db.close()
-    echo rws
-    return newMensaje(0,"{'data':" & $rws & "}")
+    jsostrall &= "]}"
+    #echo rws
+    echo jsostrall
+    return parseJson(jsostrall)
 
 proc validateaddRow(tablan:string,ar:AgregarFila):Mensaje=
     let config = getconfig()
