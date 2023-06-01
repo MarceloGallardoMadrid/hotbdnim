@@ -6,16 +6,23 @@ import lib
 router myrouter:
     get "/":
         resp "va"
+    patch "/":
+        resp "Funciona patch"
     get "/tablas":
         resp %*todastablas()
-    post "/newtabla/":
-        
-        
+    get "/tablas/@tablan/@id":
+        echo "por aca"
+        resp print(getRow(@"tablan",@"id"))
+    get "/tablas/@tablan":
+        resp print(getRows(@"tablan"))
+    
+    post "/tablas/@tablan":
         let jsonObject = parseJson($request.body)
-        
 
+        resp print(addRow(@"tablan",jsonObject))
+    post "/newtabla/":
+        let jsonObject = parseJson($request.body)
         var tabla = to(jsonObject, Tabla)
-        
         resp print(newtabla(tabla))
     post "/edittabla/@tablan":
         let jsonObject = parseJson($request.body)

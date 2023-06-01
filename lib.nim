@@ -2,6 +2,7 @@ import os
 import options
 import std/db_sqlite
 import sequtils
+import parseutils
 import tables
 import std/oids
 import json
@@ -30,7 +31,11 @@ type EditTabla = object
     cambiarnombre: Option[seq[seq[string]]]
     #Se borra la columna anterior y se crea una nueva con un nuevo tipo
     cambiartipo: Option[seq[Campo]]
-
+type AgregarCampo = object
+    nombre : string
+    valor : string
+type AgregarFila = object
+    valores : seq[AgregarCampo]
 proc `==`(t1:Tabla,t2:Tabla):bool=
     return t1.nombre == t2.nombre
 proc `==`(c1:Campo,c2:Campo):bool=
@@ -63,6 +68,7 @@ proc getconfig():Config=
     #echo config_str
     db.close()
     let jsonObject = parseJson(config_str)
+    #let x:string = 3
     return to(jsonObject, Config)
 proc setconfig(config:Config)=
     let db = open("data.sqlite","","","")
@@ -276,9 +282,6 @@ proc edittabla*(tablan:string,jsono:JsonNode):Mensaje=
 proc todastablas*():seq[Tabla]=
     getconfig().tablas
 
-
-
-
 # Aca iria la libreria
 proc initdatabase*()=
     if not fileExists("data.sqlite"):
@@ -294,3 +297,90 @@ proc initdatabase*()=
         db.close()
     let config = getconfig()
     echo config
+
+
+## Logica de los datos
+## Es cualquiera que devuelva un mensaje pero por ahora
+proc getRow*(tablan:string,id:string):Mensaje=
+    echo "Get row baby"
+    let config = getconfig()
+    let idx_table = config.tablas.find(Tabla(nombre:tablan))
+    if idx_table == -1:
+        return newMensaje(-1,"{'data':'No existe esa tabla'}")
+    let db = open("data.sqlite","","","")
+    let sqlcode ="SELECT * FROM " & tablan & " WHERE id = ?"
+    let rw = db.getRow(sql sqlcode , id)
+    db.close()
+    if rw.len == 0:
+        return newMensaje(-2,"{'data':'No existe ese record'}")
+    return newMensaje(0,"{'data':" & $rw & "}")
+    
+proc getRows*(tablan:string):Mensaje=
+    let config = getconfig()
+    let idx_table = config.tablas.find(Tabla(nombre:tablan))
+    if idx_table == -1:
+        return newMensaje(-1,"{'data':'No existe esa tabla'}")
+    let db = open("data.sqlite","","","")
+    let sqlcode ="SELECT * FROM " & tablan  
+    let rws = db.getAllRows(sql sqlcode)
+    db.close()
+    echo rws
+    return newMensaje(0,"{'data':" & $rws & "}")
+
+proc validateaddRow(tablan:string,ar:AgregarFila):Mensaje=
+    let config = getconfig()
+    let idx_table = config.tablas.find(Tabla(nombre:tablan))
+    if idx_table == -1:
+        return newMensaje(-1,"No existe esa tabla")
+    let tabla = config.tablas[idx_table]
+    for c in ar.valores:
+        let idx_c = tabla.campos.find(Campo(nombre:c.nombre))
+        let campo=tabla.campos[idx_c]
+        if idx_c == -1:
+            return newMensaje(-2,"No existe ese campo: " & c.nombre)
+
+        if campo.tipo == "real":
+            var valor:float
+            let res = parseFloat(c.valor,valor,0)
+            if res == 0:
+                return newMensaje(-3,"El campo tiene un valor invalido: " & c.nombre)
+        if campo.tipo == "integer":
+            var valor:int
+            let res = parseInt(c.valor,valor,0)
+            if res == 0:
+                return newMensaje(-3,"El campo tiene un valor invalido: " & c.nombre)
+    return newMensaje(0,"")
+proc addRow*(tablan:string,jso:JsonNode):Mensaje=
+    var newrow = to(jso,AgregarFila)
+    let valido = validateaddRow(tablan,newrow)
+    if valido.codigo < 0:
+
+        return valido
+    var sqlcode = "INSERT INTO ? "
+    var sqlcodefields = "( ? ,"
+    var sqlcodevalues = "( ? ,"
+    var arrfields:seq[string] = @[tablan,"id"]
+    var arrvalues:seq[string] = @[$genOid()]
+    let vlen = newrow.valores.len
+    var i = 0
+    for valor in newrow.valores:
+        if i < vlen-1:
+            sqlcodefields &= " ?, "
+            sqlcodevalues &= " ?, "
+        else:
+            sqlcodefields &= " ? "
+            sqlcodevalues &= " ? "
+        arrfields.add(valor.nombre)
+        arrvalues.add(valor.valor)
+        i += 1
+    sqlcodefields &= " ) VALUES "
+    sqlcodevalues &= " )"
+    sqlcode &= sqlcodefields & sqlcodevalues
+    let db=open("data.sqlite","","","")
+    db.exec(sql sqlcode,arrfields.concat(arrvalues))
+    db.close()
+    return newMensaje(0,"Se guardo joya")
+proc editRow()=
+    echo "X"
+proc deleteRow()=
+    echo "X"

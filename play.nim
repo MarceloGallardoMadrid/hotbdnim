@@ -1,4 +1,6 @@
 import tiny_sqlite, std / options
+import parseutils
+import sequtils
 # Primero voy a usar un archivo json que diga la estructura de las tablas
 # Si no existe te pide crear uno
 # si existe una base de datos .sqlite te pregunta si queres usarla como referencia
@@ -57,3 +59,10 @@ for row in db.iterate("SELECT name, age FROM Person"):
 # Output:
 # John Doe Some(47)
 # Jane Doe None[int]
+var arr1 = @["1","2"]
+var arr2 = @["3","4"]
+
+proc printThings(things: varargs[string]) =
+  for thing in things:
+    echo thing
+printThings(arr1.concat(arr2))
