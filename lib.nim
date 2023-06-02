@@ -36,9 +36,14 @@ type AgregarCampo = object
     valor : string
 type AgregarFila = object
     valores : seq[AgregarCampo]
+type MetaData = object
+    mensaje : string
 type DBResponse[T] = object
     meta : string
     data : T
+
+proc newMetaData(mensaje:string):MetaData=
+    MetaData(mensaje:mensaje)
 proc newDBResponse[T](meta:string, data: T):DBResponse[T]=
     DBResponse[T](meta:meta,data:data)
 proc `==`(t1:Tabla,t2:Tabla):bool=
@@ -82,24 +87,36 @@ proc setconfig(config:Config)=
     db.close()
 proc newMensaje(cod:int,msg:string):Mensaje=
     Mensaje(codigo:cod,msg:msg)
-proc newtabla*(tabla:Tabla):Mensaje=
+proc newtabla*(tabla:Tabla):JsonNode=
     var config = getconfig()
     for t in config.tablas:
         if t.nombre == tabla.nombre:
             var m = Mensaje( codigo : -1 , msg : "ya existe esa tabla")
-            return m
+            var jso = %* {}
+            jso["meta"] = %*{}
+            jso["meta"]["mensaje"] = %* m
+            jso["data"] = %* {}
+            return jso
     var campos_map=initTable[string,int]()
     var sqlcode = "CREATE TABLE " & tabla.nombre & "(id string,"
     var i=0
     for c in tabla.campos:
         if campos_map.hasKey(c.nombre):
-            var m = Mensaje(codigo : -2 , msg : "Hay campos repetidos")
-            return m
+            var m = Mensaje(codigo : -2 , msg : "Hay campos repetidos: " & c.nombre)
+            var jso = %* {}
+            jso["meta"] = %*{}
+            jso["meta"]["mensaje"] = %* m
+            jso["data"] = %* {}
+            return jso
         let ix_t = @["text","real","integer","blob"].find(c.tipo)
         if ix_t == -1:
-            var m = Mensaje(codigo : -3 , msg : "Hay un tipo de campo que no existe")
+            var m = Mensaje(codigo : -3 , msg : "Hay un tipo de campo que no existe: " & c.nombre)
 
-            return m
+            var jso = %* {}
+            jso["meta"] = %*{}
+            jso["meta"]["mensaje"] = %* m
+            jso["data"] = %* {}
+            return jso
         sqlcode &= c.nombre & " " & c.tipo
         if i != tabla.campos.len-1:
             sqlcode &= " , "
@@ -114,20 +131,34 @@ proc newtabla*(tabla:Tabla):Mensaje=
     #echo sqlcode
     db.exec(sql sqlcode )
     db.close()
-    return Mensaje(codigo:1 , msg : "Se pudo guardar la tabla")
+    var m = Mensaje(codigo:1 , msg : "Se pudo guardar la tabla")
+    var jso = %* {}
+    jso["meta"] = %*{}
+    jso["meta"]["mensaje"] = %* m
+    jso["data"] = %* tabla
+    return jso
 
-proc deletetabla*(tablan:string):Mensaje=
+proc deletetabla*(tablan:string):JsonNode=
     var config = getconfig()
     let ix_t = config.tablas.find(Tabla(nombre:tablan))
     if ix_t == -1:
-        return Mensaje(codigo: -4, msg:"No existe esa tabla")
-    
+        var m = Mensaje(codigo: -4, msg:"No existe esa tabla")
+        var jso = %* {}
+        jso["meta"] = %*{}
+        jso["meta"]["mensaje"] = %* m
+        jso["data"] = %* {}
+        return jso
     config.tablas = config.tablas.filter(proc(t:Tabla):bool = t.nombre != tablan)
     let db = open("data.sqlite","","","")
     db.exec(sql "DROP TABLE " & tablan )
     db.close()
     setconfig(config)
-    return Mensaje(codigo:2 , msg :"Se Pudo eliminar la tabla")
+    var m = Mensaje(codigo:2 , msg :"Se Pudo eliminar la tabla: " & tablan)
+    var jso = %* {}
+    jso["meta"] = %*{}
+    jso["meta"]["mensaje"] = %* m
+    jso["data"] = %* {}
+    return jso
 
 
 proc validedittabla(tabla:Tabla,editt:EditTabla):Mensaje=
@@ -206,24 +237,38 @@ proc validedittabla(tabla:Tabla,editt:EditTabla):Mensaje=
 
     if editt.nombre.isSome:
         haycambio=true
+        var config = getconfig()
+        let idx_t = config.tablas.find(Tabla(nombre:editt.nombre.get()))
+        if idx_t != -1:
+            return newMensaje(-11,"No se puede cambiar el nombre de la tabla a una que ya existe: " & editt.nombre.get())
     if not haycambio:
         return newMensaje(-10,"NO se hizo ningun cambio")
-    newMensaje(0,"")
+    newMensaje(0,"Todo bien")
 
 
 #"Se puede agregar columnas, quitarlas, cambiarle el nombre y cambiarle el tipo"
-proc edittabla*(tablan:string,jsono:JsonNode):Mensaje=
+proc edittabla*(tablan:string,jsono:JsonNode):JsonNode=
     var config = getconfig()
     
     let idx_t = config.tablas.find(Tabla(nombre:tablan))
     
     if idx_t == -1:
-        return newMensaje(-5,"Esa tabla no existe")
+        var m = newMensaje(-5,"Esa tabla no existe")
+        var jso = %* {}
+        jso["meta"] = %*{}
+        jso["meta"]["mensaje"] = %* m
+        jso["data"] = %* {}
+        return jso
     var t = config.tablas[idx_t]
     var editt=to(jsono,EditTabla)
     var valido=validedittabla(t,editt)
     if valido.codigo != 0:
-        return valido
+        var m = valido
+        var jso = %* {}
+        jso["meta"] = %*{}
+        jso["meta"]["mensaje"] = %* m
+        jso["data"] = %* {}
+        return jso
     if editt.nuevos.isSome:
         var db = open("data.sqlite","","","")
         db.exec(sql"BEGIN")
@@ -283,9 +328,21 @@ proc edittabla*(tablan:string,jsono:JsonNode):Mensaje=
     
     config.tablas[idx_t] = t
     setconfig(config)
-    return valido
-proc todastablas*():seq[Tabla]=
-    getconfig().tablas
+    var m = valido
+    var jso = %* {}
+    jso["meta"] = %*{}
+    jso["meta"]["mensaje"] = %* m
+    jso["data"] = %* t
+    return jso
+proc todastablas*():JsonNode=
+    let config = getconfig()
+    var m = newMensaje(0,"Todo bien")
+    var jso = %*  {}
+    jso["meta"] = %* {}
+    jso["meta"]["mensaje"] = %* m
+    jso["meta"]["tablacount"] = %* config.tablas.len
+    jso["data"] = %* config.tablas
+    jso
 
 # Aca iria la libreria
 proc initdatabase*()=

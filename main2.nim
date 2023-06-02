@@ -4,12 +4,14 @@ import asyncdispatch, jester, strutils
 import lib
 
 router myrouter:
+    # Testing
     get "/":
         resp "va"
+    # Modificar una tabla
     patch "/tablas/@tablan/records/@id":
         let jsonObject = parseJson($request.body)
         resp print(editRow(@"tablan",@"id",jsonObject))
-    # Debe devolver un json
+    # Tpdas las tablas
     get "/tablas":
         resp %*todastablas()
     # Ver un record de una tabla
@@ -19,24 +21,25 @@ router myrouter:
     # Ver los records de una tabla
     get "/tablas/@tablan/records":
         resp %*getRows(@"tablan")
-    # Debe devolver un json
+    # Agregar una fila a la tabla
     post "/tablas/@tablan/records":
         let jsonObject = parseJson($request.body)
 
         resp print(addRow(@"tablan",jsonObject))
-    # Debe devolver un json
+    # Agregar una tabla
     post "/newtabla/":
         let jsonObject = parseJson($request.body)
         var tabla = to(jsonObject, Tabla)
-        resp print(newtabla(tabla))
-    # Debe devolver un json
+        resp newtabla(tabla)
+    # Editar una tabla
     post "/edittabla/@tablan":
         let jsonObject = parseJson($request.body)
-        echo jsonObject
-        resp print(edittabla(@"tablan",jsonObject))
-    # Debe devolver un json
+        
+        resp edittabla(@"tablan",jsonObject)
+    # Eliminar una tabla
     post "/deletetabla/@tablan":
-        resp print(deletetabla(@"tablan"))
+        resp deletetabla(@"tablan")
+    # Eliminar una fila de la tabla
     delete "/tablas/@tablan/records/@id":
         resp print(deleteRow(@"tablan",@"id"))
     else:
